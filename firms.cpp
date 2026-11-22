@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
+#include <windows.h>
 
 using namespace std;
 
@@ -18,7 +19,7 @@ struct Firm {
 Firm* readFromFile(const string& filename, int& count) {
     ifstream fin(filename);
     if (!fin) {
-        cout << "Error: file " << filename << " not found!" << endl;
+        cout << "Ошибка: файл " << filename << " не найден!" << endl;
         count = 0;
         return nullptr;
     }
@@ -40,17 +41,17 @@ Firm* readFromFile(const string& filename, int& count) {
 
 void viewData(const Firm* arr, int count) {
     if (count == 0 || arr == nullptr) {
-        cout << "Database is empty." << endl;
+        cout << "База данных пуста." << endl;
         return;
     }
     cout << "\n--------------------------------------------------------------------------------\n";
     cout << left << setw(5) << "ID"
-         << setw(14) << "Name"
-         << setw(12) << "City"
-         << setw(14) << "Industry"
-         << setw(12) << "Staff"
-         << setw(12) << "Revenue"
-         << setw(10) << "Salary" << endl;
+         << setw(14) << "Название"
+         << setw(12) << "Город"
+         << setw(14) << "Отрасль"
+         << setw(12) << "Сотрудники"
+         << setw(12) << "Выручка"
+         << setw(10) << "Зарплата" << endl;
     cout << "--------------------------------------------------------------------------------\n";
     for (int i = 0; i < count; i++) {
         cout << left << setw(5) << arr[i].id
@@ -66,17 +67,17 @@ void viewData(const Firm* arr, int count) {
 
 void editRecord(Firm* arr, int count) {
     int targetId;
-    cout << "Enter Firm ID to edit: ";
+    cout << "Введите ID фирмы для редактирования: ";
     cin >> targetId;
     for (int i = 0; i < count; i++) {
         if (arr[i].id == targetId) {
-            cout << "Enter new Name, City, Industry, Staff, Revenue, Salary:\n";
+            cout << "Введите новые: Название, Город, Отрасль, Сотрудников, Выручку, Зарплату:\n";
             cin >> arr[i].name >> arr[i].city >> arr[i].industry >> arr[i].employees >> arr[i].revenue >> arr[i].avgSalary;
-            cout << "Record updated!" << endl;
+            cout << "Запись успешно обновлена!" << endl;
             return;
         }
     }
-    cout << "Firm with ID " << targetId << " not found." << endl;
+    cout << "Фирма с ID " << targetId << " не найдена." << endl;
 }
 
 Firm* addRecord(Firm* arr, int& count) {
@@ -84,17 +85,17 @@ Firm* addRecord(Firm* arr, int& count) {
     for (int i = 0; i < count; i++) {
         newArr[i] = arr[i];
     }
-    cout << "Enter ID, Name, City, Industry, Staff, Revenue, Salary:\n";
+    cout << "Введите: ID, Название, Город, Отрасль, Сотрудников, Выручку, Зарплату:\n";
     cin >> newArr[count].id >> newArr[count].name >> newArr[count].city >> newArr[count].industry >> newArr[count].employees >> newArr[count].revenue >> newArr[count].avgSalary;
     delete[] arr;
     count++;
-    cout << "Firm added!" << endl;
+    cout << "Фирма добавлена!" << endl;
     return newArr;
 }
 
 Firm* deleteRecord(Firm* arr, int& count) {
     int targetId;
-    cout << "Enter Firm ID to delete: ";
+    cout << "Введите ID фирмы для удаления: ";
     cin >> targetId;
     int idx = -1;
     for (int i = 0; i < count; i++) {
@@ -104,7 +105,7 @@ Firm* deleteRecord(Firm* arr, int& count) {
         }
     }
     if (idx == -1) {
-        cout << "Firm with ID " << targetId << " not found." << endl;
+        cout << "Фирма с ID " << targetId << " не найдена." << endl;
         return arr;
     }
     Firm* newArr = (count - 1 > 0) ? new Firm[count - 1] : nullptr;
@@ -115,13 +116,13 @@ Firm* deleteRecord(Firm* arr, int& count) {
     }
     delete[] arr;
     count--;
-    cout << "Firm deleted!" << endl;
+    cout << "Фирма удалена!" << endl;
     return newArr;
 }
 
 void calculateStats(const Firm* arr, int count) {
     if (count == 0 || arr == nullptr) {
-        cout << "No data for calculation." << endl;
+        cout << "Нет данных для расчетов." << endl;
         return;
     }
     long long totalStaff = 0;
@@ -132,20 +133,20 @@ void calculateStats(const Firm* arr, int count) {
         totalRevenue += arr[i].revenue;
         sumSalary += arr[i].avgSalary;
     }
-    cout << "\n=== Statistics ===" << endl;
-    cout << "Total firms: " << count << endl;
-    cout << "Total employees: " << totalStaff << endl;
-    cout << "Total revenue: " << fixed << setprecision(1) << totalRevenue << " mln" << endl;
-    cout << "Average salary across firms: " << fixed << setprecision(1) << (sumSalary / count) << "k" << endl;
+    cout << "\n=== Статистика по фирмам ===" << endl;
+    cout << "Всего фирм: " << count << endl;
+    cout << "Всего сотрудников: " << totalStaff << endl;
+    cout << "Общая выручка: " << fixed << setprecision(1) << totalRevenue << " млн" << endl;
+    cout << "Средняя зарплата по фирмам: " << fixed << setprecision(1) << (sumSalary / count) << " тыс." << endl;
 }
 
 void saveToFile(const Firm* arr, int count) {
     string outFilename;
-    cout << "Enter new filename to save (e.g. out.txt): ";
+    cout << "Введите имя нового файла для сохранения (например, out.txt): ";
     cin >> outFilename;
     ofstream fout(outFilename);
     if (!fout) {
-        cout << "Error creating file!" << endl;
+        cout << "Ошибка при создании файла!" << endl;
         return;
     }
     for (int i = 0; i < count; i++) {
@@ -154,24 +155,27 @@ void saveToFile(const Firm* arr, int count) {
              << arr[i].revenue << " " << arr[i].avgSalary << "\n";
     }
     fout.close();
-    cout << "Data saved to " << outFilename << " successfully!" << endl;
+    cout << "Данные успешно сохранены в файл " << outFilename << "!" << endl;
 }
 
 int main() {
+    SetConsoleOutputCP(65001);
+    SetConsoleCP(65001);
+
     int count = 0;
     Firm* firms = readFromFile("firms.txt", count);
     if (!firms) return 1;
 
     int choice;
     do {
-        cout << "\n--- MENU (Firms DB) ---\n";
-        cout << "1. View all firms\n";
-        cout << "2. Edit firm\n";
-        cout << "3. Add firm\n";
-        cout << "4. Delete firm\n";
-        cout << "5. Calculate statistics\n";
-        cout << "0. Save to new file & Exit\n";
-        cout << "Choice: ";
+        cout << "\n--- МЕНЮ (База данных: Фирмы) ---\n";
+        cout << "1. Просмотр всех фирм\n";
+        cout << "2. Редактировать фирму\n";
+        cout << "3. Добавить фирму\n";
+        cout << "4. Удалить фирму\n";
+        cout << "5. Вычислить статистику\n";
+        cout << "0. Сохранить в новый файл и выйти\n";
+        cout << "Выберите действие: ";
         cin >> choice;
 
         switch (choice) {
@@ -181,7 +185,7 @@ int main() {
             case 4: firms = deleteRecord(firms, count); break;
             case 5: calculateStats(firms, count); break;
             case 0: saveToFile(firms, count); break;
-            default: cout << "Invalid choice!" << endl;
+            default: cout << "Неверный выбор!" << endl;
         }
     } while (choice != 0);
 
