@@ -63,57 +63,66 @@ class MainWindow(QMainWindow):
 
         self.query = QSqlQuery(self.db)
         if "Firms" not in self.db.tables():
-self.query.exec("СОЗДАТЬ ТАБЛИЦУ Firms (ID INTEGER PRIMARY KEY, Name VARCHAR(30), City VARCHAR(30), Employees INTEGER, Revenue REAL);")
-rows = [
-"(1, 'Яндекс', 'Москва', 25000, 800.5)",
-"(2, 'Газпром', 'СПб', 490000, 8500.0)",
-"(3, 'Ozon', 'Москва', 60000, 420.2)",
-"(4, 'Selectel', 'СПб', 1200, 12.5)",
-"(5, "Тинькофф", "Москва", 45000, 510.8)"
-]
-для r в строках:
-self.query.exec(f"INSERT INTO Firms (ID, Name, City, Employees, Revenue) VALUES {r};")
-self.model = QSqlTableModel(self, self.db)
-self.model.setTable("Firms")
-self.model.setEditStrategy(QSqlTableModel.OnFieldChange)
-self.model.select()
-self.table_view.setModel(self.model)
-self.btn_all.clicked.connect(self.show_all)
-self.btn_f1.clicked.connect(self.filter_rev)
-self.btn_f2.clicked.connect(self.filter_city)
-self.btn_sort.clicked.connect(self.sort_rev)
-self.btn_add.clicked.connect(self.add_record)
-self.btn_rem.clicked.connect(self.rem_record)
-def show_all(self):
-self.model.setFilter("")
-self.model.setSort(0, Qt.AscendingOrder)
-self.model.select()
-def filter_rev(self):
-self.model.setFilter("Revenue > 500")
-self.model.select()
-def filter_city(self):
-self.model.setFilter("City = 'Moscow'")
-self.model.select()
-def sort_rev(self):
-self.model.setSort(4, Qt.DescendingOrder)
-self.model.select()
-определение add_record(self):
-если не все([self.edit_id.text(), self.edit_name.text(), self.edit_city.text(), self.edit_emp.text(), self.edit_rev.text()]):
-QMessageBox.warning(self, "Внимание", "Заполните все поля!")
-возвращает
-sql = f"ВСТАВИТЬ В значения Firms (ID, название, город, сотрудники, доход) ({self.edit_id. text()}, '{self.edit_name.text()}', '{self.edit_city.text()}', {self.edit_emp.text()}, {self.edit_rev.text()});"
-если не self.query.exec(sql):
-QMessageBox.warning(self, "Ошибка", "Запись с таким идентификатором уже существует или неверный формат чисел!")
-return
-self.model.select()
-def rem_record(self):
-if not self.edit_id.text():
-QMessageBox.warning(self, "Внимание", "Введите идентификатор для удаления!")
-return
-self.query.exec(f"DELETE FROM Firms WHERE ID = {self.edit_id.text()};")
-self.model.select()
-if name == "main":
-app = QApplication(sys.argv)
-w = MainWindow()
-w.show()
-sys.exit(app.exec())
+            self.query.exec("CREATE TABLE Firms (ID INTEGER PRIMARY KEY, Name VARCHAR(30), City VARCHAR(30), Employees INTEGER, Revenue REAL);")
+            rows = [
+                "(1, 'Yandex', 'Moscow', 25000, 800.5)",
+                "(2, 'Gazprom', 'SPb', 490000, 8500.0)",
+                "(3, 'Ozon', 'Moscow', 60000, 420.2)",
+                "(4, 'Selectel', 'SPb', 1200, 12.5)",
+                "(5, 'Tinkoff', 'Moscow', 45000, 510.8)"
+            ]
+            for r in rows:
+                self.query.exec(f"INSERT INTO Firms (ID, Name, City, Employees, Revenue) VALUES {r};")
+
+        self.model = QSqlTableModel(self, self.db)
+        self.model.setTable("Firms")
+        self.model.setEditStrategy(QSqlTableModel.OnFieldChange)
+        self.model.select()
+        self.table_view.setModel(self.model)
+
+        self.btn_all.clicked.connect(self.show_all)
+        self.btn_f1.clicked.connect(self.filter_rev)
+        self.btn_f2.clicked.connect(self.filter_city)
+        self.btn_sort.clicked.connect(self.sort_rev)
+        self.btn_add.clicked.connect(self.add_record)
+        self.btn_rem.clicked.connect(self.rem_record)
+
+    def show_all(self):
+        self.model.setFilter("")
+        self.model.setSort(0, Qt.AscendingOrder)
+        self.model.select()
+
+    def filter_rev(self):
+        self.model.setFilter("Revenue > 500")
+        self.model.select()
+
+    def filter_city(self):
+        self.model.setFilter("City = 'Moscow'")
+        self.model.select()
+
+    def sort_rev(self):
+        self.model.setSort(4, Qt.DescendingOrder)
+        self.model.select()
+
+    def add_record(self):
+        if not all([self.edit_id.text(), self.edit_name.text(), self.edit_city.text(), self.edit_emp.text(), self.edit_rev.text()]):
+            QMessageBox.warning(self, "Внимание", "Заполните все поля!")
+            return
+        sql = f"INSERT INTO Firms (ID, Name, City, Employees, Revenue) VALUES ({self.edit_id.text()}, '{self.edit_name.text()}', '{self.edit_city.text()}', {self.edit_emp.text()}, {self.edit_rev.text()});"
+        if not self.query.exec(sql):
+            QMessageBox.warning(self, "Ошибка", "Запись с таким ID уже существует или неверный формат чисел!")
+            return
+        self.model.select()
+
+    def rem_record(self):
+        if not self.edit_id.text():
+            QMessageBox.warning(self, "Внимание", "Введите ID для удаления!")
+            return
+        self.query.exec(f"DELETE FROM Firms WHERE ID = {self.edit_id.text()};")
+        self.model.select()
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    w = MainWindow()
+    w.show()
+    sys.exit(app.exec())
