@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     tableView = new QTableView(this);
     tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    tableView->verticalHeader()->hide();
     leftLayout->addWidget(tableView);
 
     QHBoxLayout *btnRow = new QHBoxLayout();

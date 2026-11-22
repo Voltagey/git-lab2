@@ -20,6 +20,7 @@ class MainWindow(QMainWindow):
 
         self.table_view = QTableView(self)
         self.table_view.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table_view.verticalHeader().hide()
         left_layout.addWidget(self.table_view)
 
         btn_row = QHBoxLayout()
