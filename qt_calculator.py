@@ -95,63 +95,71 @@ class MainWindow(QMainWindow):
         self.display.setText(self.display.text() + digit)
 
     def dot_clicked(self):
-if self.waiting_for_operand:
-self.display.setText("0")
-self.waiting_for_operand = False
-если "." не в self.display.text():
-self.display.setText(self.display.text() + ".")
-определение clear_clicked(self):
-self.display.setText("0")
-self.first_operand = 0.0
-self.pending_operator = ""
-self.waiting_for_operand = True
-def binary_operator_clicked(self):
-self.first_operand = float(self.display.text())
-self.pending_operator = self.sender().text()
-self.waiting_for_operand = True
-определение equal_clicked(self):
-second_operand = float(self.display.text())
-op = self.pending_operator
-если op == "+":
-результат = self.first_operand + second_operand
-elif op == "-":
-результат = self.first_operand - second_operand
-elif op == "*":
-результат = self.first_operand * second_operand
-elif op == "/":
-если second_operand == 0.0:
-QMessageBox.warning(self, "Ошибка", "Деление на ноль невозможно!")
-self.clear_clicked()
-возвращает
-результат = self.first_operand / second_operand
-еще:
-возвращает
-self.display.setText(f"{результат:g}")
-self.pending_operator = ""
-self.waiting_for_operand = True
-определение plus_minus_clicked(self):
-val = float(self.display.text())
-self.display.setText(f"{-val:g}")
-определение cos_clicked(self):
-val = float(self.display.text())
-self.display.setText(f"{math.cos(val):.6g}")
-self.waiting_for_operand = True
-def log2_clicked(self):
-val = float(self.display.text())
-if val <= 0.0:
-QMessageBox.warning(self, "Ошибка", "Логарифм определен только для x > 0!")
-return
-self.display.setText(f"{math.log2(val):.6g}")
-self.waiting_for_operand = True
-def db_clicked(self):
-val = float(self.display.text())
-if val <= 0.0:
-QMessageBox.warning(self, "Ошибка", "Значение для дБ должно быть > 0!")
-return
-self.display.setText(f"{10.0 * math.log10(val):.6g}")
-self.waiting_for_operand = True
-если name == "main":
-app = QApplication(sys.argv)
-w = MainWindow()
-w.show()
-sys.exit(app.exec())
+        if self.waiting_for_operand:
+            self.display.setText("0")
+            self.waiting_for_operand = False
+        if "." not in self.display.text():
+            self.display.setText(self.display.text() + ".")
+
+    def clear_clicked(self):
+        self.display.setText("0")
+        self.first_operand = 0.0
+        self.pending_operator = ""
+        self.waiting_for_operand = True
+
+    def binary_operator_clicked(self):
+        self.first_operand = float(self.display.text())
+        self.pending_operator = self.sender().text()
+        self.waiting_for_operand = True
+
+    def equal_clicked(self):
+        second_operand = float(self.display.text())
+        op = self.pending_operator
+        if op == "+":
+            result = self.first_operand + second_operand
+        elif op == "-":
+            result = self.first_operand - second_operand
+        elif op == "*":
+            result = self.first_operand * second_operand
+        elif op == "/":
+            if second_operand == 0.0:
+                QMessageBox.warning(self, "Ошибка", "Деление на ноль невозможно!")
+                self.clear_clicked()
+                return
+            result = self.first_operand / second_operand
+        else:
+            return
+        self.display.setText(f"{result:g}")
+        self.pending_operator = ""
+        self.waiting_for_operand = True
+
+    def plus_minus_clicked(self):
+        val = float(self.display.text())
+        self.display.setText(f"{-val:g}")
+
+    def cos_clicked(self):
+        val = float(self.display.text())
+        self.display.setText(f"{math.cos(val):.6g}")
+        self.waiting_for_operand = True
+
+    def log2_clicked(self):
+        val = float(self.display.text())
+        if val <= 0.0:
+            QMessageBox.warning(self, "Ошибка", "Логарифм определен только для x > 0!")
+            return
+        self.display.setText(f"{math.log2(val):.6g}")
+        self.waiting_for_operand = True
+
+    def db_clicked(self):
+        val = float(self.display.text())
+        if val <= 0.0:
+            QMessageBox.warning(self, "Ошибка", "Значение для дБ должно быть > 0!")
+            return
+        self.display.setText(f"{10.0 * math.log10(val):.6g}")
+        self.waiting_for_operand = True
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    w = MainWindow()
+    w.show()
+    sys.exit(app.exec())
